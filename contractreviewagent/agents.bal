@@ -11,31 +11,8 @@ Produce clear, structured feedback that explains each issue you find and why it 
 When the user asks you to share or send the feedback, use the send email tool to deliver it to the requested recipient with a clear subject and a well formatted summary.
 Always confirm the contract identifier and recipient details before taking any action that fetches data or sends an email.
 If a tool call fails or the contract cannot be found, explain this clearly to the user instead of guessing.`
-    }, model = openaiModelprovider, tools = [resendMcpServerMcp, contractStoreMcp]
+    }, model = openaiModelprovider, tools = [contractStoreMcp, resendMcpServerMcp]
 );
-
-isolated class ResendMcpServerMcpToolkit {
-    *ai:McpBaseToolKit;
-    private final mcp:StreamableHttpClient mcpClient;
-    private final readonly & ai:ToolConfig[] tools;
-
-    public isolated function init(string serverUrl, mcp:Implementation info = {name: "MCP", version: "1.0.0"},
-            *mcp:StreamableHttpClientTransportConfig config) returns ai:Error? {
-        do {
-            self.mcpClient = check new mcp:StreamableHttpClient(serverUrl, config);
-            self.tools = check ai:getPermittedMcpToolConfigs(self.mcpClient, info, self.callTool).cloneReadOnly();
-        } on fail error e {
-            return error ai:Error("Failed to initialize MCP toolkit", e);
-        }
-    }
-
-    public isolated function getTools() returns ai:ToolConfig[] => self.tools;
-
-    @ai:AgentTool
-    public isolated function callTool(mcp:CallToolParams params) returns mcp:CallToolResult|error {
-        return self.mcpClient->callTool(params);
-    }
-}
 
 isolated class ContractStoreMcpToolkit {
     *ai:McpBaseToolKit;
@@ -59,3 +36,28 @@ isolated class ContractStoreMcpToolkit {
         return self.mcpClient->callTool(params);
     }
 }
+
+isolated class ResendMcpServerMcpToolkit {
+    *ai:McpBaseToolKit;
+    private final mcp:StreamableHttpClient mcpClient;
+    private final readonly & ai:ToolConfig[] tools;
+
+    public isolated function init(string serverUrl, mcp:Implementation info = {name: "MCP", version: "1.0.0"},
+            *mcp:StreamableHttpClientTransportConfig config) returns ai:Error? {
+        do {
+            self.mcpClient = check new mcp:StreamableHttpClient(serverUrl, config);
+            // Only the send-email tool is permitted; every other tool the Resend MCP server exposes is excluded.
+            self.tools = check ai:getPermittedMcpToolConfigs(self.mcpClient, info, {"send-email": self.callTool}).cloneReadOnly();
+        } on fail error e {
+            return error ai:Error("Failed to initialize MCP toolkit", e);
+        }
+    }
+
+    public isolated function getTools() returns ai:ToolConfig[] => self.tools;
+
+    @ai:AgentTool
+    public isolated function callTool(mcp:CallToolParams params) returns mcp:CallToolResult|error {
+        return self.mcpClient->callTool(params);
+    }
+}
+
