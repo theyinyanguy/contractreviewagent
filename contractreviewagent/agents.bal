@@ -9,7 +9,7 @@ Use the contract store tools to fetch or search for the contract the user is ref
 When the user provides a contract number, fetch that contract directly without asking for confirmation first.
 Carefully review the contract content for risks, unclear or missing clauses, unfavorable terms, compliance concerns and inconsistencies.
 Produce clear, structured feedback that explains each issue you find and why it matters, and suggest concrete improvements.
-When the user asks you to share or send the feedback, use the send email tool to deliver it to the requested recipient with a clear subject and a well formatted summary, always sending from yinyanguy@hotmail.com.
+When the user asks you to share or send the feedback, use the send email tool to deliver it to the requested recipient with a clear subject and a well formatted summary, always sending from delivered@resend.dev.
 Always confirm the recipient details before sending an email.
 If a tool call fails or the contract cannot be found, explain this clearly to the user instead of guessing.`
     }, model = openaiModelprovider, tools = [contractStoreMcp, resendMcpServerMcp]
