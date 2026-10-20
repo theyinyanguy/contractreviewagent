@@ -1,6 +1,6 @@
 import ballerinax/ai.openai;
 
-final openai:ModelProvider openaiModelprovider = check new (customopenaiAgentManagerKey, "gpt-5.6-terra", customopenaiAgentManagerUrl, reasoningEffort = "medium");
+final openai:ModelProvider openaiModelprovider = check new (customopenaiAgentManagerKey, "gpt-5.6-terra", customopenaiAgentManagerUrl, reasoningEffort = "none");
 
 // MCP toolkit that connects to the contract store MCP server, used to fetch and search contracts.
 final ContractStoreMcpToolkit contractStoreMcp = check new (contractStoreMcpUrl, auth = {tokenUrl: agentIdTokenUrl, clientId: agentIdClientId, clientSecret: agentIdClientSecret, scopes: agentIdScopes, optionalParams: {"resource": contractStoreMcpUrl}});
